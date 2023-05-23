@@ -2,7 +2,7 @@
 A simple anime screenshot sorter written in Python. Initially just a personal project but maybe someone else out there likes to take a lot of anime screenshots.    
 Simply run the .py file in a folder and it will try to sort all anime screenshots into separate folders.
 
-https://github.com/anotherindex/anime-screenshot-sorter/assets/134344244/e5a7c310-490b-42b4-b730-1bf929ffbc4c
+https://github.com/anotherindex/anime-screenshot-sorter/assets/134344244/a1f6aacc-3014-479f-8e1d-d3aedd6207d2
 
 ### How-To
 Download the "Index's Anime Screenshot Sorter.py" file, put it in a folder with your anime screenshots and run the file. You will need Python 3.5 or higher installed. 
