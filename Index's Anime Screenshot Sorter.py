@@ -11,7 +11,7 @@ import re, os, shutil
 screenshot_must_have_subgroup = True
 
 # The screenshot needs to have an episode number, like "Anime Name - 03"
-screenshot_must_have_episode_number = False
+screenshot_must_have_episode_number = True
 
 # Allow S01E01 or S1E104 episode formatting without needing a dash in the anime title. The above setting needs to be set to False for this to work.
 screenshot_can_have_season_episode_formatting = False
