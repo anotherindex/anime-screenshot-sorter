@@ -1,7 +1,7 @@
 import re, os, shutil
 
 ##############################################
-# --- Index's Anime Screenshot Sorter v1.0 ---
+# --- Index's Anime Screenshot Sorter v1.1 ---
 # A simple Python script to sort anime screenshots into folders.
 # You can change the following options by setting them to be "True" or "False".
 # Make sure the first letter of "True" and "False" is capitalized.
@@ -39,16 +39,17 @@ def get_anime_title(full_filename):
 
         # check if the file starts with a [Sub Group]
         subgroup_regex_search = re.search("^\[[^+]*?]", full_filename)
-        if screenshot_must_have_subgroup:
-            if bool(subgroup_regex_search):
+
+        #determines the start of the anime title
+        if bool(subgroup_regex_search):
+            if full_filename[subgroup_regex_search.span(0)[1]] == " ":
                 anime_title_start = subgroup_regex_search.span(0)[1] + 1
             else:
-                return "doesn't meet criteria"
+                anime_title_start = subgroup_regex_search.span(0)[1]
+        elif screenshot_must_have_subgroup:
+            return "doesn't meet criteria"
         else:
-            if bool(subgroup_regex_search):
-                anime_title_start = subgroup_regex_search.span(0)[1] + 1
-            else:
-                anime_title_start = 0
+            anime_title_start = 0
 
         # check if anime has a dash followed by an episode number
         anime_title_regex_search = re.search("( - )[0-9]", full_filename)
