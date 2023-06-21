@@ -21,6 +21,7 @@ Example: "Anime Name - 03.jpg"
 ### Screenshots must have an episode number:
 The default setting is "True".    
 If disabled it will also sort screenshots simply have a dash in its name.   
+Be careful as disabling this can cause issues with duplicated files since Windows adds " - Copy" at the end of the filename.
 Example: "[SubGroup] Anime Title - OVA1.jpg" or "Anime Title - S01E03.jpg".
 ### Screenshots may have S01E01 formatting:
 The default setting is "False".    
