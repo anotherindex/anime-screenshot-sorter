@@ -28,6 +28,10 @@ The default setting is "False".
 This one is a bit of an edge case. It needs "Screenshots must have an episode number" being False, but if that setting is False, it already sorts "Anime Title - S01E12.jpg".    
 Enabling this however *does* allow you to sort screenshots that don't have a dash in them and are formatted as "Anime Title S01.jpg".    
 Example: "Anime Title S01E104.jpg" or "[Sub Group] Anime Title S03E01.png"
+### Only sort screenshots if anime folder exists:
+The default setting is "False".    
+If set to "True", it will only sort the screenshots into folders, if a fitting folder already exists.    
+This works well if some shows from a previous season are overlapping into the new season for a couple episodes and you only want to sort those old shows for now so you can put them into a dedicated season folder.
 ### Autostart sorting when file is run:
 The default setting is "False".    
 If set to False you will get promptet to start the sorting with pressing Enter. If set to True it will automatically run the sorting after executing the .py file.   
