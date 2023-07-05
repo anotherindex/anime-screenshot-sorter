@@ -1,7 +1,7 @@
 import re, os, shutil
 
 ##############################################
-# --- Index's Anime Screenshot Sorter v1.1 ---
+# --- Index's Anime Screenshot Sorter v1.2 ---
 # A simple Python script to sort anime screenshots into folders.
 # You can change the following options by setting them to be "True" or "False".
 # Make sure the first letter of "True" and "False" is capitalized.
@@ -16,6 +16,9 @@ screenshot_must_have_episode_number = True
 # Allow S01E01 or S1E104 episode formatting without needing a dash in the anime title. The above setting needs to be set to False for this to work.
 screenshot_can_have_season_episode_formatting = False
 
+# Only sort screenshots if a folder for that anime already exists. (Great to sort shows that overlap into a new season and sorting new shows later.)
+only_sort_screenshots_if_folder_already_exists = False
+
 # Automatically sort when file is run without waiting for a user input
 autostart = False
 
@@ -25,7 +28,7 @@ autostart = False
 screenshot_folder = str(os.path.dirname(__file__))
 file_list = os.listdir(screenshot_folder)
 anime_counter = 0  # counts how many anime of the same title are currently being sorted
-sort_counter = [0, 0, 0]  # sucessfully sorted, issues with sorting, non anime
+sort_counter = [0, 0, 0, 0]  # successfully sorted, issues with sorting, non anime, not sored due to existing folder rule
 previous_anime_title = ""
 sorting_prefix = "+"
 
@@ -89,11 +92,15 @@ def sort_file():
     try:
         # checks if a folder for the anime already exists, if not creates one
         if not os.path.exists(screenshot_folder + "/" + anime_title):
-            os.makedirs(screenshot_folder + "/" + anime_title)
-            sorting_prefix = "*"
+            if only_sort_screenshots_if_folder_already_exists:
+                sorting_prefix = "-"
+            else:
+                os.makedirs(screenshot_folder + "/" + anime_title)
+                sorting_prefix = "*"
+                shutil.move(screenshot_folder + "/" + current_file, screenshot_folder + "/" + anime_title + "/" + current_file)
         elif not (sorting_prefix == "*" and previous_anime_title == anime_title):
             sorting_prefix = "+"
-        shutil.move(screenshot_folder + "/" + current_file, screenshot_folder + "/" + anime_title + "/" + current_file)
+            shutil.move(screenshot_folder + "/" + current_file, screenshot_folder + "/" + anime_title + "/" + current_file)
 
         # counting and displaying the sorting process
         if previous_anime_title == anime_title:
@@ -107,8 +114,12 @@ def sort_file():
             print(f"\n{sorting_prefix} {anime_title}", end="")
             anime_counter = 1
         previous_anime_title = anime_title
-        sort_counter[0] += 1
+        if sorting_prefix == "-":
+            sort_counter[3] += 1
+        else:
+            sort_counter[0] += 1
     except:
+        # way too general except statement because I'm lazy
         if previous_anime_title == "file_sorting_exception":
             print(f"! Issue sorting {current_file}")
         else:
@@ -118,7 +129,7 @@ def sort_file():
 
 
 if __name__ == "__main__":
-    print(f"""##### Index's Anime Screenshot Sorter v1.0 #####\n\nSettings:\nScreenshots must start with [SubGroup]:   {screenshot_must_have_subgroup}\nScreenshots must have an episode number:  {screenshot_must_have_episode_number}\nScreenshots may have S01E01 formatting:   {screenshot_can_have_season_episode_formatting}{" (Note: This setting is inactive since the above setting is set to True." if (screenshot_must_have_episode_number and screenshot_can_have_season_episode_formatting) else ""}\nAutostart sorting when file is run:       {autostart}\n(You can change these settings by opening this file in a text editor.)\n""")
+    print(f"""##### Index's Anime Screenshot Sorter v1.2 #####\n\nSettings:\nScreenshots must start with [SubGroup]:       {screenshot_must_have_subgroup}\nScreenshots must have an episode number:      {screenshot_must_have_episode_number}\nScreenshots may have S01E01 formatting:       {screenshot_can_have_season_episode_formatting}{" (Note: This setting is inactive since the above setting is set to True." if (screenshot_must_have_episode_number and screenshot_can_have_season_episode_formatting) else ""}\nOnly sort screenshots if anime folder exists: {only_sort_screenshots_if_folder_already_exists}\nAutostart sorting when file is run:           {autostart}\n(You can change these settings by opening this file in a text editor.)\n""")
     if autostart:
         print("--- Starting: ---")
     else:
@@ -135,4 +146,4 @@ if __name__ == "__main__":
                 previous_anime_title = "file_sorting_exception"
             else:
                 sort_file()
-    input(f"\n\n--- Sorting done! ---\n\nSucessfully sorted screenshots:     {sort_counter[0]}\nIssues with filename while sorting: {sort_counter[1]}\nDetected as non-anime screenshots:  {sort_counter[2]}\n\nPress Enter to close this window...")
+    input(f"""\n\n--- Sorting done! ---\n\nSucessfully sorted screenshots:     {sort_counter[0]}\nIssues with filename while sorting: {sort_counter[1]}\nDetected as non-anime screenshots:  {sort_counter[2]}\n{"Not sorted because of folder rule:  " if only_sort_screenshots_if_folder_already_exists else ""}{(str(sort_counter[3]))+chr(10) if only_sort_screenshots_if_folder_already_exists else ""}\n\nPress Enter to close this window...""")
