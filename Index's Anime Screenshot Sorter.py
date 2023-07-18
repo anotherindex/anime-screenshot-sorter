@@ -101,6 +101,8 @@ def sort_file():
         elif not (sorting_prefix == "*" and previous_anime_title == anime_title):
             sorting_prefix = "+"
             shutil.move(screenshot_folder + "/" + current_file, screenshot_folder + "/" + anime_title + "/" + current_file)
+        else:
+            shutil.move(screenshot_folder + "/" + current_file, screenshot_folder + "/" + anime_title + "/" + current_file)
 
         # counting and displaying the sorting process
         if previous_anime_title == anime_title:
