@@ -2,7 +2,7 @@
 A simple anime screenshot sorter written in Python. Initially just a personal project but maybe someone else out there likes to take a lot of anime screenshots.    
 Simply run the .py file in a folder and it will try to sort all anime screenshots into separate folders.
 
-https://github.com/anotherindex/anime-screenshot-sorter/assets/134344244/a1f6aacc-3014-479f-8e1d-d3aedd6207d2
+https://github.com/anotherindex/anime-screenshot-sorter/assets/134344244/d72808c6-dea9-4d13-803c-8fb1a3fde57d
 
 ### How-To
 Download the "Index's Anime Screenshot Sorter.py" file, put it in a folder with your anime screenshots and run the file. You will need Python 3.5 or higher installed. 
@@ -32,6 +32,10 @@ Example: "Anime Title S01E104.jpg" or "[Sub Group] Anime Title S03E01.png"
 The default setting is "False".    
 If set to "True", it will only sort the screenshots into folders, if a fitting folder already exists.    
 This works well if some shows from a previous season are overlapping into the new season for a couple episodes and you only want to sort those old shows for now so you can put them into a dedicated season folder.
+### Overwrite Duplicates
+The default setting is "False".    
+If overwrite duplicates is set to "True" and the sorter tries to put a file in a folder, but a file with that exact filename is already in the folder, it will be overwritten.    
+If set to "False" and a file with the exact filename is already in the target folder, both files will be stay unchanged.
 ### Autostart sorting when file is run:
 The default setting is "False".    
 If set to False you will get promptet to start the sorting with pressing Enter. If set to True it will automatically run the sorting after executing the .py file.   
