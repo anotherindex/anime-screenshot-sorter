@@ -1,7 +1,7 @@
 import re, os, shutil
 
 ##############################################
-# --- Index's Anime Screenshot Sorter v1.2 ---
+# --- Index's Anime Screenshot Sorter v1.3 ---
 # A simple Python script to sort anime screenshots into folders.
 # You can change the following options by setting them to be "True" or "False".
 # Make sure the first letter of "True" and "False" is capitalized.
@@ -19,6 +19,9 @@ screenshot_can_have_season_episode_formatting = False
 # Only sort screenshots if a folder for that anime already exists. (Great to sort shows that overlap into a new season and sorting new shows later.)
 only_sort_screenshots_if_folder_already_exists = False
 
+# If set to True, and a screenshot gets moved to a folder where there is already a file with the exact same name, the old file will be overwritten.
+overwrite_duplicates = False
+
 # Automatically sort when file is run without waiting for a user input
 autostart = False
 
@@ -28,10 +31,11 @@ autostart = False
 screenshot_folder = str(os.path.dirname(__file__))
 file_list = os.listdir(screenshot_folder)
 anime_counter = 0  # counts how many anime of the same title are currently being sorted
-sort_counter = [0, 0, 0, 0]  # successfully sorted, issues with sorting, non anime, not sored due to existing folder rule
+sort_counter = [0, 0, 0, 0, 0]  # successfully sorted, issues with sorting, non anime, not sorted due to existing folder rule, not sorted due to it being a duplicate
 previous_anime_title = ""
 sorting_prefix = "+"
-
+table_width = 55 # the width of the "Anime" column in the table in character length
+table_fill_character = "." # the symbol that spans from the end of the anime title until the end of the row
 
 def get_anime_title(full_filename):
     global previous_anime_title
@@ -89,32 +93,45 @@ def get_anime_title(full_filename):
 def sort_file():
     global sorting_prefix, previous_anime_title, anime_counter, sort_counter
 
+    def move_file():
+        # moves the file, but only if there is either no duplicate file or if there is one, checks if it's allowed to overwrite duplicates
+        if not os.path.isfile(str(screenshot_folder + "/" + anime_title + "/" + current_file)) or overwrite_duplicates:
+            shutil.move(screenshot_folder + "/" + current_file, screenshot_folder + "/" + anime_title + "/" + current_file)
+            return False
+        else:
+            sort_counter[4] += 1
+            return True
+
     try:
         # checks if a folder for the anime already exists, if not creates one
         if not os.path.exists(screenshot_folder + "/" + anime_title):
             if only_sort_screenshots_if_folder_already_exists:
                 sorting_prefix = "-"
+                duplicate_file = False
             else:
                 os.makedirs(screenshot_folder + "/" + anime_title)
                 sorting_prefix = "*"
-                shutil.move(screenshot_folder + "/" + current_file, screenshot_folder + "/" + anime_title + "/" + current_file)
+                duplicate_file = move_file()
         elif not (sorting_prefix == "*" and previous_anime_title == anime_title):
+            duplicate_file = move_file()
             sorting_prefix = "+"
-            shutil.move(screenshot_folder + "/" + current_file, screenshot_folder + "/" + anime_title + "/" + current_file)
         else:
-            shutil.move(screenshot_folder + "/" + current_file, screenshot_folder + "/" + anime_title + "/" + current_file)
+            duplicate_file = move_file()
+
+        if duplicate_file:
+            return
 
         # counting and displaying the sorting process
         if previous_anime_title == anime_title:
             anime_counter += 1
             print("\r", end="")
-            print(f"{sorting_prefix} {anime_title} - x{anime_counter}", end="")
+            print(f"║ {sorting_prefix} ║ {(anime_title[0:table_width-3]+'...') if len(anime_title)>table_width else (anime_title.ljust(table_width, table_fill_character))} ║ {str(anime_counter).rjust(6, ' ')} ║", end="")
         elif previous_anime_title == "file_sorting_exception":
-            print(f"\n{sorting_prefix} {anime_title}", end="")
             anime_counter = 1
+            print(f"\n║ {sorting_prefix} ║ {(anime_title[0:table_width-3]+'...') if len(anime_title)>table_width else (anime_title.ljust(table_width, table_fill_character))} ║ {str(anime_counter).rjust(6, ' ')} ║", end="")
         else:
-            print(f"\n{sorting_prefix} {anime_title}", end="")
             anime_counter = 1
+            print(f"\n║ {sorting_prefix} ║ {(anime_title[0:table_width-3]+'...') if len(anime_title)>table_width else (anime_title.ljust(table_width, table_fill_character))} ║ {str(anime_counter).rjust(6, ' ')} ║", end="")
         previous_anime_title = anime_title
         if sorting_prefix == "-":
             sort_counter[3] += 1
@@ -123,20 +140,20 @@ def sort_file():
     except:
         # way too general except statement because I'm lazy
         if previous_anime_title == "file_sorting_exception":
-            print(f"! Issue sorting {current_file}")
+            print(f"║ ! ║ Issue sorting {current_file}")
         else:
-            print(f"\n! Could not sort: {current_file}")
+            print(f"\n║ ! ║ Could not sort: {current_file}")
             previous_anime_title = "file_sorting_exception"
         sort_counter[1] += 1
 
 
 if __name__ == "__main__":
-    print(f"""##### Index's Anime Screenshot Sorter v1.2 #####\n\nSettings:\nScreenshots must start with [SubGroup]:       {screenshot_must_have_subgroup}\nScreenshots must have an episode number:      {screenshot_must_have_episode_number}\nScreenshots may have S01E01 formatting:       {screenshot_can_have_season_episode_formatting}{" (Note: This setting is inactive since the above setting is set to True." if (screenshot_must_have_episode_number and screenshot_can_have_season_episode_formatting) else ""}\nOnly sort screenshots if anime folder exists: {only_sort_screenshots_if_folder_already_exists}\nAutostart sorting when file is run:           {autostart}\n(You can change these settings by opening this file in a text editor.)\n""")
+    print(f"""##### Index's Anime Screenshot Sorter v1.3 #####\n\nSettings:\nScreenshots must start with [SubGroup]:       {screenshot_must_have_subgroup}\nScreenshots must have an episode number:      {screenshot_must_have_episode_number}\nScreenshots may have S01E01 formatting:       {screenshot_can_have_season_episode_formatting}{" (Note: This setting is inactive since the above setting is set to True." if (screenshot_must_have_episode_number and screenshot_can_have_season_episode_formatting) else ""}\nOnly sort screenshots if anime folder exists: {only_sort_screenshots_if_folder_already_exists}\nOverwrite old file if duplicate gets sorted:  {overwrite_duplicates}\nAutostart sorting when file is run:           {autostart}\n(You can change these settings by opening this file in a text editor.)\n""")
     if autostart:
-        print("--- Starting: ---")
+        print(f"""--- Starting: ---\n\n╔═══╦═{table_width*"═"}═╦════════╗\n║ = ║ Anime{(table_width-5)*" "} ║ Sorted ║\n╠═══╬═{table_width*"═"}═╬════════╣""", end="")
     else:
         input("Press Enter to start sorting...")
-        print("--- Starting: ---")
+        print(f"""--- Starting: ---\n\n╔═══╦═{table_width*"═"}═╦════════╗\n║ = ║ Anime{(table_width-5)*" "} ║ Sorted ║\n╠═══╬═{table_width*"═"}═╬════════╣""", end="")
     for current_file in file_list:
         if bool(re.search(".jpg|.png", current_file)):
             anime_title = get_anime_title(current_file)
@@ -148,4 +165,4 @@ if __name__ == "__main__":
                 previous_anime_title = "file_sorting_exception"
             else:
                 sort_file()
-    input(f"""\n\n--- Sorting done! ---\n\nSucessfully sorted screenshots:     {sort_counter[0]}\nIssues with filename while sorting: {sort_counter[1]}\nDetected as non-anime screenshots:  {sort_counter[2]}\n{"Not sorted because of folder rule:  " if only_sort_screenshots_if_folder_already_exists else ""}{(str(sort_counter[3]))+chr(10) if only_sort_screenshots_if_folder_already_exists else ""}\n\nPress Enter to close this window...""")
+    input(f"""\n╚═══╩═{table_width*"═"}═╩════════╝\n\n--- Sorting done! ---\n\nSucessfully sorted screenshots:     {sort_counter[0]}\nIssues with filename while sorting: {sort_counter[1]}\nDetected as non-anime screenshots:  {sort_counter[2]}\n{"Not sorted because of folder rule:  " if only_sort_screenshots_if_folder_already_exists else ""}{(str(sort_counter[3]))+chr(10) if only_sort_screenshots_if_folder_already_exists else ""}{"Not sorted because duplicate:       " if not overwrite_duplicates else ""}{(str(sort_counter[4]))+chr(10) if not overwrite_duplicates else ""}\n\nPress Enter to close this window...""")
