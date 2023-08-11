@@ -46,6 +46,13 @@ If set to False you will get promptet to start the sorting with pressing Enter. 
 - [Sub-Group] AnimeTitle - OVA3.jpg
 - [SubGroup]\_Anime\_Title\_-\_03\_(720p).png
 - AnimeTitle S01E143 (1080p).jpg
+## "I'm tech illiterate, how do I run this?"
+First you need [Python 3.5 or higher](https://www.python.org/downloads/) installed.    
+Then download the screenshot sorter python file from the [releases](https://github.com/anotherindex/anime-screenshot-sorter/releases) or grab the script from the [uploaded file directly](https://raw.githubusercontent.com/anotherindex/anime-screenshot-sorter/main/Index's%20Anime%20Screenshot%20Sorter.py) and save it as a .py file.    
+Put that .py file in the folder where you save your screenshots and just doubleclick it.    
+If this just opens the file like a textdocument instead of executing it, you can do the following:    
+Create a new textfile, write `py "name_of_the_downloaded_screenshot_sorter_file.py"` in it (with the correct filename) and save it as `screenshot_sorter.bat` and doubleclick that file.
+
 ## Misc.
 - Maybe test it on a couple screenshots first or make a backup. I have not throughly tested this script on multiple machines.
 - Acronym suggestions for this are not welcome.
