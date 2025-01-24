@@ -1,7 +1,7 @@
-import re, os, shutil
+import re, os, shutil, time
 
 ##############################################
-# --- Index's Anime Screenshot Sorter v1.3 ---
+# --- Index's Anime Screenshot Sorter v1.5 ---
 # A simple Python script to sort anime screenshots into folders.
 # You can change the following options by setting them to be "True" or "False".
 # Make sure the first letter of "True" and "False" is capitalized.
@@ -32,6 +32,7 @@ screenshot_folder = str(os.path.dirname(__file__))
 file_list = os.listdir(screenshot_folder)
 anime_counter = 0  # counts how many anime of the same title are currently being sorted
 sort_counter = [0, 0, 0, 0, 0]  # successfully sorted, issues with sorting, non anime, not sorted due to existing folder rule, not sorted due to it being a duplicate
+date_range = [999999999999, 0] #
 previous_anime_title = ""
 sorting_prefix = "+"
 table_width = 55 # the width of the "Anime" column in the table in character length
@@ -96,6 +97,11 @@ def sort_file():
     def move_file():
         # moves the file, but only if there is either no duplicate file or if there is one, checks if it's allowed to overwrite duplicates
         if not os.path.isfile(str(screenshot_folder + "/" + anime_title + "/" + current_file)) or overwrite_duplicates:
+            creation_date = os.path.getctime(screenshot_folder + "/" + current_file)
+            if int(creation_date) <= date_range[0]:
+                date_range[0] = int(creation_date)
+            if int(creation_date) >= date_range[1]:
+                date_range[1] = int(creation_date)
             shutil.move(screenshot_folder + "/" + current_file, screenshot_folder + "/" + anime_title + "/" + current_file)
             return False
         else:
@@ -165,4 +171,4 @@ if __name__ == "__main__":
                 previous_anime_title = "file_sorting_exception"
             else:
                 sort_file()
-    input(f"""\n╚═══╩═{table_width*"═"}═╩════════╝\n\n--- Sorting done! ---\n\nSucessfully sorted screenshots:     {sort_counter[0]}\nIssues with filename while sorting: {sort_counter[1]}\nDetected as non-anime screenshots:  {sort_counter[2]}\n{"Not sorted because of folder rule:  " if only_sort_screenshots_if_folder_already_exists else ""}{(str(sort_counter[3]))+chr(10) if only_sort_screenshots_if_folder_already_exists else ""}{"Not sorted because duplicate:       " if not overwrite_duplicates else ""}{(str(sort_counter[4]))+chr(10) if not overwrite_duplicates else ""}\n\nPress Enter to close this window...""")
+    input(f"""\n╚═══╩═{table_width*"═"}═╩════════╝\n\n--- Sorting done! ---\n\nSucessfully sorted screenshots:     {sort_counter[0]}\nIssues with filename while sorting: {sort_counter[1]}\nDetected as non-anime screenshots:  {sort_counter[2]}\n{"Not sorted because of folder rule:  " if only_sort_screenshots_if_folder_already_exists else ""}{(str(sort_counter[3]))+chr(10) if only_sort_screenshots_if_folder_already_exists else ""}{"Not sorted because duplicate:       " if not overwrite_duplicates else ""}{(str(sort_counter[4]))+chr(10) if not overwrite_duplicates else ""}\nThe sorted screenshots have been taken in a span of {(int(date_range[1]-date_range[0])//86400+1) if sort_counter[0]>0 else "0"} day(s).\n\nPress Enter to close this window...""")
